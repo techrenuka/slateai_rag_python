@@ -28,7 +28,7 @@ model = ChatXAI(model="grok-3-mini-beta")
 # Add CORS middleware configuration BEFORE any routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Add your frontend URL
+    allow_origins=["*"],  # Allow all origins for now, adjust for production
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],  # Explicitly allow OPTIONS
     allow_headers=["*"],
