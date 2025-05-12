@@ -142,12 +142,12 @@ def generate_audio_response(text):
         # )
         
         # Get the voice instance
-        voice = client.get_voice("bella")
+        # voice = client.get_voice("bella")
         
         # Generate audio using the client API
         audio = client.text_to_speech.convert(
             text=text,
-            voice=voice,
+            voice_name='bella',
             model="eleven_multilingual_v2",  # Latest model for better quality
             # voice_settings=voice_settings
         )
