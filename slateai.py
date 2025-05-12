@@ -9,7 +9,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain_xai import ChatXAI
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
-from elevenlabs import generate, set_api_key, save
+from elevenlabs import generate, VoiceSettings, set_api_key
 from dotenv import load_dotenv
 import json
 import os
@@ -128,12 +128,25 @@ except Exception as e:
 def generate_audio_response(text):
     try:
         if not elevenlabs_api_key:
+            print("Warning: ElevenLabs API key not found. Audio generation disabled.")
             return None
-        audio = generate(
-            text=text,
-            voice="Bella",  # You can change the voice as needed
-            model="eleven_monolingual_v1"
+            
+        # Configure voice settings for better quality and stability
+        voice_settings = VoiceSettings(
+            stability=0.75,  # Higher stability for more consistent output
+            similarity_boost=0.75,  # Better voice matching
+            style=0.0,  # Neutral style
+            use_speaker_boost=True  # Enhanced clarity
         )
+        
+        # Generate audio using the updated API
+        audio = generate_audio(
+            text=text,
+            voice="Bella",  # Professional female voice
+            model="eleven_multilingual_v2",  # Latest model for better quality
+            voice_settings=voice_settings
+        )
+        
         # Generate a unique filename for the audio
         audio_filename = f"response_{hash(text)}.mp3"
         audio_path = os.path.join(os.path.dirname(__file__), "audio_responses", audio_filename)
@@ -141,8 +154,22 @@ def generate_audio_response(text):
         # Create audio_responses directory if it doesn't exist
         os.makedirs(os.path.dirname(audio_path), exist_ok=True)
         
+        # Clean up old audio files (keep only last 50 files)
+        audio_dir = os.path.dirname(audio_path)
+        audio_files = sorted(
+            [f for f in os.listdir(audio_dir) if f.endswith('.mp3')],
+            key=lambda x: os.path.getctime(os.path.join(audio_dir, x))
+        )
+        if len(audio_files) > 50:
+            for old_file in audio_files[:-50]:
+                try:
+                    os.remove(os.path.join(audio_dir, old_file))
+                except Exception as e:
+                    print(f"Warning: Could not remove old audio file {old_file}: {str(e)}")
+        
         # Save the audio file
-        save(audio, audio_path)
+        with open(audio_path, 'wb') as f:
+            f.write(audio)
         return audio_filename
     except Exception as e:
         print(f"Error generating audio: {str(e)}")
