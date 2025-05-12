@@ -9,3 +9,4 @@ faiss-cpu
 requests
 python-dotenv
 langchain-xai
+elevenlabs
