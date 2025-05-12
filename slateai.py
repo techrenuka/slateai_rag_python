@@ -134,12 +134,12 @@ def generate_audio_response(text):
             return None
             
         # Configure voice settings for better quality and stability
-        voice_settings = VoiceSettings(
-            stability=0.75,  # Higher stability for more consistent output
-            similarity_boost=0.75,  # Better voice matching
-            style=0.0,  # Neutral style
-            use_speaker_boost=True  # Enhanced clarity
-        )
+        # voice_settings = VoiceSettings(
+        #     stability=0.75,  # Higher stability for more consistent output
+        #     similarity_boost=0.75,  # Better voice matching
+        #     style=0.0,  # Neutral style
+        #     use_speaker_boost=True  # Enhanced clarity
+        # )
         
         # Get the voice instance
         voice = client.get_voice("bella")
@@ -149,7 +149,7 @@ def generate_audio_response(text):
             text=text,
             voice=voice,
             model="eleven_multilingual_v2",  # Latest model for better quality
-            voice_settings=voice_settings
+            # voice_settings=voice_settings
         )
         
         # Generate a unique filename for the audio
