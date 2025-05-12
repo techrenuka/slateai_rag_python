@@ -9,7 +9,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain_xai import ChatXAI
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
-from elevenlabs import generate, VoiceSettings, set_api_key
+from elevenlabs.client import ElevenLabs
+from elevenlabs import play
 from dotenv import load_dotenv
 import json
 import os
@@ -17,12 +18,13 @@ import os
 # Load environment variables
 load_dotenv()
 
-# Set up ElevenLabs API key
+# Initialize ElevenLabs client with environment variable
 elevenlabs_api_key = os.getenv('ELEVENLABS_API_KEY')
-if elevenlabs_api_key:
-    set_api_key(elevenlabs_api_key)
-else:
+if not elevenlabs_api_key:
     print("Warning: ELEVENLABS_API_KEY not found in environment variables")
+    client = None
+else:
+    client = ElevenLabs(api_key=elevenlabs_api_key)
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -139,10 +141,13 @@ def generate_audio_response(text):
             use_speaker_boost=True  # Enhanced clarity
         )
         
-        # Generate audio using the updated API
-        audio = generate_audio(
+        # Get the voice instance
+        voice = client.get_voice("bella")
+        
+        # Generate audio using the client API
+        audio = client.text_to_speech.convert(
             text=text,
-            voice="Bella",  # Professional female voice
+            voice=voice,
             model="eleven_multilingual_v2",  # Latest model for better quality
             voice_settings=voice_settings
         )
