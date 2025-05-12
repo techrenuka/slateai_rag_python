@@ -147,8 +147,8 @@ def generate_audio_response(text):
         # Generate audio using the client API
         audio = client.text_to_speech.convert(
             text=text,
-            voice_name='bella',
-            model="eleven_multilingual_v2",  # Latest model for better quality
+            voice_id='21m00Tcm4TlvDq8ikWAM',
+            model_id="eleven_flash_v2_5",  # Latest model for better quality
             # voice_settings=voice_settings
         )
         
