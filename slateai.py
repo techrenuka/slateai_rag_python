@@ -145,12 +145,15 @@ def generate_audio_response(text):
         # voice = client.get_voice("bella")
         
         # Generate audio using the client API
-        audio = client.text_to_speech.convert(
+        audio_stream = client.text_to_speech.convert(
             text=text,
             voice_id='21m00Tcm4TlvDq8ikWAM',
             model_id="eleven_flash_v2_5",  # Latest model for better quality
             # voice_settings=voice_settings
         )
+
+        # Convert the generator to bytes
+        audio_bytes = b''.join(chunk for chunk in audio_stream)
         
         # Generate a unique filename for the audio
         audio_filename = f"response_{hash(text)}.mp3"
@@ -174,7 +177,7 @@ def generate_audio_response(text):
         
         # Save the audio file
         with open(audio_path, 'wb') as f:
-            f.write(audio)
+            f.write(audio_bytes)
         return audio_filename
     except Exception as e:
         print(f"Error generating audio: {str(e)}")
